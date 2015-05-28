@@ -20,7 +20,9 @@ Author: Lital Natan <procscsi@gmail.com>
 
 from buildbot.buildslave.drmaa import DRMAALatentBuildSlave
 
+
 class OptionStub(object):
+
     def __init__(self, option_name, option_dict):
         self.option_name = option_name
         self.option_dict = option_dict
@@ -33,24 +35,25 @@ class OptionStub(object):
 
 
 class GridEngineLatentBuildSlave(DRMAALatentBuildSlave):
+
     """Latent BuildSlave for the Grid Engine Distributen System"""
 
     # Dictionary for naming SGE job arguments in a 'human-readable' form
     grid_option_dictionary = {
-            'queue':'-q',
-            'name':'-N',
-            'shell':'-S',
-            'env': '-v',
-            }
+        'queue': '-q',
+        'name': '-N',
+        'shell': '-S',
+        'env': '-v',
+        }
 
-    job_options = None # SGE job options (dict[argument]=value)
-    job_resources = None # SGE job resources (dict[resource]=amount/object)
+    job_options = None  # SGE job options (dict[argument]=value)
+    job_resources = None  # SGE job resources (dict[resource]=amount/object)
 
     def __init__(self, buildslave_setup_command, *args, **kwargs):
         """Default Constructor
 
         buildslave_setup_command -- the o/s command starting the BuildBot slave
-                                    its recommended to use a command starting a 
+                                    its recommended to use a command starting a
                                     non-daemon slave instance.
         *args -- non-keyword arguments for the BuildBot slave
         **kwargs -- keyword arguments for the BuildBot slave
@@ -58,14 +61,14 @@ class GridEngineLatentBuildSlave(DRMAALatentBuildSlave):
         """
         # Default job options
         self.job_options = {
-                'queue': 'all.q',
-                'name': 'BuildSlave',
-                }
+            'queue': 'all.q',
+            'name': 'BuildSlave',
+            }
 
         # Default job resources
         self.job_resources = {
-                'arch': '*',
-                }
+            'arch': '*',
+            }
 
         DRMAALatentBuildSlave.__init__(self, buildslave_setup_command, *args, **kwargs)
 

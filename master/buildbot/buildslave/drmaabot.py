@@ -28,15 +28,17 @@ Revisions: Michael Pelletier <michael.v.pelletier@raytheon.com>
            November 2013
 """
 
-from twisted.internet import defer, threads
-from twisted.python import log
+from buildbot import config
 from buildbot.buildslave import AbstractLatentBuildSlave
-from buildbot import interfaces, config
+from twisted.internet import defer
+from twisted.internet import threads
+from twisted.python import log
 
 try:
     import drmaa
 except ImportError:
     drmaa = None
+
 
 class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
 
@@ -55,7 +57,7 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
 
         if not drmaa:
             config.error("Enrico Sirola's 'drmaa' is needed to use a %s" %
-                    self.__class__.__name__)
+                         self.__class__.__name__)
 
         AbstractLatentBuildSlave.__init__(self, *args, **kwargs)
         self.job_template = self._get_blank_job_template()
@@ -68,7 +70,7 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
 
     def _start_instance(self):
         """ Start a latent buildslave via a DRMAA-compatible scheduler """
-        
+
         drmaa_session = self._get_persistent_drmaa_session()
         self.job_id = drmaa_session.runJob(self.job_template)
 
@@ -89,7 +91,7 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
 
     def _stop_instance(self):
         """ Stop the buildslave job via DRMAA terminate and clear job_id """
-    
+
         self._terminate_drmaa_job()
         self.job_id = None
 
@@ -110,7 +112,7 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
 
         log.msg('Stopped %s job %s (%s)' %
                 (self.drmaa_session_contact, self.job_id, self.slavename))
-    
+
     def _get_persistent_drmaa_session(self):
         """ Obtain or create the DRMAA session instance and return it """
 
@@ -119,9 +121,9 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
             if self.drmaa_session_contact is not None:
                 session = drmaa.Session(self.drmaa_session_contact)
                 log.msg('Connected to existing %s DRMAA session' %
-                        (self.drmaa_session_contact)
+                        (self.drmaa_session_contact))
             else:
-	        log.msg('%s' % (drmaa))
+                log.msg('%s' % (drmaa))
                 session = drmaa.Session()
                 log.msg('Created a new %s DRMAA session' % session.contact)
 
