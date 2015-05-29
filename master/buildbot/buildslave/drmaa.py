@@ -28,6 +28,8 @@ Revisions: Michael Pelletier <michael.v.pelletier@raytheon.com>
            November 2013
 """
 
+from __future__ import absolute_import
+
 from buildbot import config
 from buildbot.buildslave import AbstractLatentBuildSlave
 from twisted.internet import defer

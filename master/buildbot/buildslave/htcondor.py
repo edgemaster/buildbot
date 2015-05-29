@@ -22,7 +22,7 @@ Revisions: Michael Pelletier <michael.v.pelletier@raytheon.com>
            November 2013
 """
 
-from buildbot.buildslave.drmaabot import DRMAALatentBuildSlave
+from buildbot.buildslave.drmaa import DRMAALatentBuildSlave
 
 
 class HTCondorLatentBuildSlave(DRMAALatentBuildSlave):
