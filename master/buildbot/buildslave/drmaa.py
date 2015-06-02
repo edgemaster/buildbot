@@ -49,7 +49,8 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
     job_id = None
     job_template = None
 
-    def __init__(self, slave_start_cmd, *args, **kwargs):
+    def __init__(self, name, password, slave_start_cmd, drmaa_session_contact=None,
+                 *args, **kwargs):
         """ DRMAALatentBuildSlave - start a buildslave with the DRMAA grid API
 
         @param slave_start_cmd: the OS command which starts the buildslave,
@@ -61,7 +62,9 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
             config.error("Enrico Sirola's 'drmaa' is needed to use a %s" %
                          self.__class__.__name__)
 
-        AbstractLatentBuildSlave.__init__(self, *args, **kwargs)
+        AbstractLatentBuildSlave.__init__(self, name, password, *args, **kwargs)
+
+        self.drmaa_session_contact = drmaa_session_contact
         self.job_template = self._get_blank_job_template()
         self.job_template.remoteCommand = slave_start_cmd
 
@@ -119,18 +122,14 @@ class DRMAALatentBuildSlave(AbstractLatentBuildSlave):
         """ Obtain or create the DRMAA session instance and return it """
 
         if not DRMAALatentBuildSlave._drmaa_session:
-            session = None
-            if self.drmaa_session_contact is not None:
-                session = drmaa.Session(self.drmaa_session_contact)
-                log.msg('Connected to existing %s DRMAA session' %
-                        (self.drmaa_session_contact))
-            else:
-                log.msg('%s' % (drmaa))
-                session = drmaa.Session()
-                log.msg('Created a new %s DRMAA session' % session.contact)
+            session = drmaa.Session()
+            session.initialize(self.drmaa_session_contact)
 
-            DRMAALatentBuildSlave._drmaa_session = session
             self.drmaa_session_contact = session.contact
+            DRMAALatentBuildSlave._drmaa_session = session
+
+            log.msg('Connected to DRMAA session: %s' %
+                    (self.drmaa_session_contact))
 
         return DRMAALatentBuildSlave._drmaa_session
 

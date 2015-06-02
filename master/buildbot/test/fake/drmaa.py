@@ -116,7 +116,7 @@ def _require_initialized(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         _test_initialized()
-        f(*args, **kwargs)
+        return f(*args, **kwargs)
     return wrapper
 
 
@@ -193,12 +193,16 @@ class Session(object):
     version = Version(long(10), long(10))
 
     _initialized = False
+    _test_return = None
+    _default_contact = 'default contact'
+    _default_build_id = 'build_id'
 
     @staticmethod
     @_require_initialized
     def control(jobId, operation):
         if operation not in JobControlAction._all:
             raise ValueError('%s not a JobControlAction' % operation)
+        Session._test_return = (jobId, operation)
 
     @staticmethod
     def createJobTemplate():
@@ -217,6 +221,7 @@ class Session(object):
     def initialize(contactString=None):
         if Session._initialized:
             raise errors.SessionAlreadyActiveException()
+        Session.contact = contactString or Session._default_contact
         Session._initialized = True
 
     @staticmethod
@@ -236,7 +241,8 @@ class Session(object):
     def runJob(jobTemplate):
         if not isinstance(jobTemplate, JobTemplate):
             raise TypeError("jobTemplate is not instance of JobTemplate")
-        return ''
+        Session._test_return = jobTemplate
+        return Session._default_build_id
 
     @staticmethod
     @_require_initialized
@@ -247,3 +253,11 @@ class Session(object):
     @_require_initialized
     def wait(jobId, timeout=-1):
         pass
+
+    def __enter__(self):
+        self.initialize(self.contactString)
+        return self
+
+    def __exit__(self, *args):
+        self.exit()
+        return False
